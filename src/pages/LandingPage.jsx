@@ -10,7 +10,7 @@ export function SpotlightNewDemo() {
   return (
     <div className="h-[40rem] w-full flex md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
       <Spotlight />
-        <section className="text-center px-6 py-20 md:py-32">
+      <section className="text-center px-6 py-20 md:py-32">
         <h1 className="text-4xl md:text-6xl font-bold text-purple-400 mb-4">
           Xlense Analytics
         </h1>
@@ -38,9 +38,9 @@ export function SpotlightNewDemo() {
 
 const LandingPage = () => {
   return (<>
-     <SpotlightNewDemo />
+    <SpotlightNewDemo />
     <div className="bg-[#0f0f0f] text-white min-h-screen">
-     
+
       {/* Features Section */}
       <section className="px-6 py-16 bg-[#1a1a1a]">
         <h2 className="text-3xl font-bold text-center text-purple-300 mb-10">
@@ -123,7 +123,7 @@ const LandingPage = () => {
         &copy; {new Date().getFullYear()} Xlense Analytics. Built with 💻 by your team.
       </footer>
     </div>
-    </>
+  </>
   );
 };
 

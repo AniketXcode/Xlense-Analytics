@@ -1,5 +1,3 @@
-import { BarChart2, Upload, History, LogIn, User } from "lucide-react";
-import { useState } from "react";
 
 const StatCard = ({ title, value, icon }) => {
   return (

@@ -6,9 +6,15 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      // 🔗 BACKEND REQUIRED: Integrate Google Sign-In with backend auth verification.
+      // 1. Send result.user to backend for token verification.
+      // 2. Backend should handle user session creation and return JWT token.
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       console.log("User:", user);
+
+      // ✅ TEMPORARY: Directly navigating after frontend-only login
+      // 🔗 BACKEND: Navigate after successful backend response/token storage
       navigate("/dashboard");
     } catch (error) {
       console.error("Google login error", error);
@@ -20,6 +26,7 @@ const Login = () => {
       <h2 className="text-3xl font-bold text-white mb-2">Login to Xlense Analytics</h2>
       <p className="text-gray-400 mb-6">Enter your email and password below</p>
 
+      {/* 🔗 BACKEND REQUIRED: Capture these values in a form state to send to backend */}
       <input
         type="email"
         placeholder="Email"
@@ -37,6 +44,7 @@ const Login = () => {
         </Link>
       </div>
 
+      {/* 🔗 BACKEND REQUIRED: OnClick handler to call backend /login API with email & password */}
       <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded mb-3 transition">
         Login
       </button>
@@ -47,6 +55,7 @@ const Login = () => {
         <hr className="flex-grow border-gray-700" />
       </div>
 
+      {/* Google Sign-in button (frontend trigger only) */}
       <button
         onClick={handleGoogleLogin}
         className="w-full flex items-center justify-center gap-2 border border-gray-600 text-white py-2 rounded hover:bg-white hover:text-black transition"

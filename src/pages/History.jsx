@@ -1,7 +1,7 @@
 // src/pages/History.jsx
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   IconFileSpreadsheet,
   IconDownload,
@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
 
+// ⚠️ TODO: Replace this static data with actual data from the backend API
 const uploadHistory = [
   {
     name: "sales_data.xlsx",
@@ -32,6 +33,21 @@ const uploadHistory = [
 
 export default function History() {
   const navigate = useNavigate();
+  const [history, setHistory] = useState([]);
+
+  // ✅ Backend Integration Step 1: Fetch upload history on mount
+  useEffect(() => {
+    // TODO: Replace this with actual API call to fetch user's upload history
+    // Example: axios.get('/api/history').then(response => setHistory(response.data));
+    setHistory(uploadHistory); // Temporary: Use mock data
+  }, []);
+
+  // ✅ Backend Integration Step 2: Download file logic
+  const handleDownload = (fileName) => {
+    // TODO: Connect to backend download endpoint here
+    // Example: window.location.href = `/api/download/${fileName}`;
+    console.log("Download requested for:", fileName);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-900 to-neutral-950 p-6 text-white">
@@ -46,16 +62,16 @@ export default function History() {
         </button>
 
         <h1 className="text-3xl font-bold text-purple-400 mb-6">
-           Upload History
+          Upload History
         </h1>
 
-        {uploadHistory.length === 0 ? (
+        {history.length === 0 ? (
           <p className="text-neutral-400 italic">
             No uploads yet... Maybe it's time to Excel at something! 😄
           </p>
         ) : (
           <div className="space-y-4">
-            {uploadHistory.map((file, idx) => (
+            {history.map((file, idx) => (
               <div
                 key={idx}
                 className="flex items-center justify-between bg-[#1a1a1a] border border-neutral-800 rounded-lg px-6 py-4 shadow hover:shadow-lg transition"
@@ -74,7 +90,10 @@ export default function History() {
 
                 <div className="text-right">
                   <p className="text-xs text-purple-300 mb-1">{file.type}</p>
-                  <button className="bg-purple-600 hover:bg-purple-700 text-sm px-3 py-1 rounded shadow flex items-center gap-2">
+                  <button
+                    onClick={() => handleDownload(file.name)}
+                    className="bg-purple-600 hover:bg-purple-700 text-sm px-3 py-1 rounded shadow flex items-center gap-2"
+                  >
                     <IconDownload size={16} />
                     Download
                   </button>

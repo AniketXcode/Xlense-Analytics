@@ -3,19 +3,18 @@
 import React from "react";
 import {
   IconUsers,
-  IconDatabase,
   IconArrowLeft,
   IconServer,
-  IconUser,
   IconUpload,
   IconEdit,
   IconTrash,
-} from "@tabler/icons-react";
+} from "@tabler/icons-react"; // Removed unused icons
 import { useNavigate } from "react-router-dom";
 
 export default function AdminPanel() {
   const navigate = useNavigate();
 
+  // ✅ MOCK DATA - TODO: Replace with API call to GET /api/users (Backend Integration)
   const users = [
     { name: "Rajat ", role: "Admin", uploads: 12 },
     { name: "Aniket ", role: "User", uploads: 6 },
@@ -38,19 +37,21 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* Grid Section */}
+      {/* Summary Cards - Static for now */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        {/* ✅ TODO: Replace values with backend stats from /api/admin/stats */}
         <StatCard title="Total Users" value="3" icon={<IconUsers />} />
         <StatCard title="Files Uploaded" value="12" icon={<IconUpload />} />
         <StatCard title="Storage Used" value="58 Mb" icon={<IconServer />} />
       </div>
 
-      {/* Data Usage Management */}
+      {/* Data Usage Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         <div className="bg-[#1a1a1a] rounded-lg p-6 border border-neutral-800">
           <h2 className="text-lg font-semibold text-purple-300 mb-4">
             Data Usage Summary
           </h2>
+          {/* ✅ TODO: Replace static summary with backend data */}
           <ul className="text-sm space-y-2">
             <li className="flex justify-between">
               <span>Total Users</span>
@@ -72,6 +73,7 @@ export default function AdminPanel() {
             Monitor Excel Usage
           </h2>
           <div className="text-sm space-y-3">
+            {/* ✅ TODO: Connect to /api/files/summary */}
             <div className="flex justify-between">
               <span>Current Uploads</span>
               <span>128 files</span>
@@ -80,7 +82,10 @@ export default function AdminPanel() {
               <span>Active Users</span>
               <span>8</span>
             </div>
-            <button className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-sm">
+            <button
+              className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-500 text-sm"
+            // ✅ BACKEND INTEGRATION: Trigger DELETE /api/files/clear or similar
+            >
               🗑️ Clear Storage
             </button>
           </div>
@@ -103,15 +108,24 @@ export default function AdminPanel() {
           </thead>
           <tbody>
             {users.map((user, i) => (
-              <tr key={i} className="border-b border-neutral-800 hover:bg-neutral-800 transition">
+              <tr
+                key={i}
+                className="border-b border-neutral-800 hover:bg-neutral-800 transition"
+              >
                 <td className="py-3">{user.name}</td>
                 <td>{user.role}</td>
                 <td>{user.uploads}</td>
                 <td className="text-right space-x-3">
-                  <button className="text-yellow-400 hover:text-yellow-300">
+                  <button
+                    className="text-yellow-400 hover:text-yellow-300"
+                  // ✅ BACKEND INTEGRATION: PATCH /api/users/:id/edit
+                  >
                     <IconEdit size={16} />
                   </button>
-                  <button className="text-red-500 hover:text-red-400">
+                  <button
+                    className="text-red-500 hover:text-red-400"
+                  // ✅ BACKEND INTEGRATION: DELETE /api/users/:id
+                  >
                     <IconTrash size={16} />
                   </button>
                 </td>
