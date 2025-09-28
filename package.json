@@ -10,7 +10,8 @@
     "install-all": "npm install --workspaces",
     "dev": "concurrently \"npm run dev --workspace=backend\" \"npm run dev --workspace=frontend\"",
     "start": "npm run start --workspace=backend",
-    "build": "npm run build --workspace=frontend"
+     "build": "npm run build --workspace=frontend",
+  "heroku-postbuild": "npm run build --workspace=frontend"
   },
   "devDependencies": {
     "concurrently": "^9.0.0"
