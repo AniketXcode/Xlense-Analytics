@@ -12,7 +12,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import History from "./pages/History";
-import LandingPage from "./pages/LandingPage";
+import Guide from "./pages/Guide";
+import AIChat from "./pages/AIChat";
 import UploadSuccess from "./pages/UploadSuccess";
 import Upload from "./pages/Upload";
 import AxisSelection from "./pages/AxisSelection";
@@ -38,6 +39,9 @@ const App = () => (
           <Route path="/upload-success" element={<UploadSuccess />} />
           <Route path="/axis-selection" element={<AxisSelection />} />
           <Route path="/charts" element={<Charts />} />
+          <Route path="/guide" element={<Guide />} />
+          <Route path="/ai-chat" element={<AIChat />} />
+
           {/* Keep the 404 route LAST */}
           <Route path="*" element={<NotFound />} />
         </Routes>

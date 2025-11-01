@@ -50,8 +50,8 @@ export default function Chart2DPage() {
       },
     ],
     credits: {
-  enabled: false,
-},
+      enabled: false,
+    },
 
   });
 
@@ -61,7 +61,7 @@ export default function Chart2DPage() {
   return (
     <div className="p-6 bg-black text-white rounded-lg shadow-lg">
       <h1 className="text-4xl font-bold text-purple-400 mb-8">
-         2D Charts Demo
+        2D Charts Demo
       </h1>
 
       <div className="overflow-x-auto whitespace-nowrap space-x-6 flex pb-4 px-2">

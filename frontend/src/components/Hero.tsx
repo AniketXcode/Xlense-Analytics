@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 
 const Hero = () => {
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black">
+    <section className="relative w-full h-screen overflow-hidden bg-black flex items-center justify-center">
       {/* Animated Background Video */}
       <motion.video
         src={bgVideo}
@@ -16,52 +16,79 @@ const Hero = () => {
         loop
         playsInline
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: 0.25 }}
         transition={{ duration: 2 }}
-        className="absolute right-5 bottom-0 w-[400px] h-[300px] sm:w-[500px] sm:h-[400px] md:w-[600px] md:h-[500px] lg:w-[700px] lg:h-[600px] object-cover mt-16 sm:mt-24 lg:-ml-10"
+        className="absolute top-0 left-0 w-full h-full object-cover"
       />
 
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-[#090013]/90"></div>
+
       {/* Content */}
-      <div className="relative z-10 flex h-full items-center px-4 sm:px-8 md:px-12 lg:px-20 mt-[-90px] sm:mt-0">
-        <div className="max-w-2xl space-y-6 text-white">
-          <motion.h1
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-snug"
-          >
-            Transform Your <br />
-            <span className="text-[#9C4EFF]">Excel Data</span> Into Stunning
-            Charts
-          </motion.h1>
+      <div className="relative z-10 max-w-4xl mx-auto text-center px-6 sm:px-8 md:px-12">
+        <motion.h1
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-[#9C4EFF] via-[#B46DFF] to-[#E1B7FF] drop-shadow-lg"
+        >
+          Turn Your Excel Data
+          <br />
+          Into Stunning <span className="text-white">Visual Insights</span>
+        </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 1 }}
-            className="text-base sm:text-lg text-gray-300 leading-relaxed"
-          >
-            Upload your Excel sheets and generate beautiful 2D & 3D
-            <br className="hidden sm:block" />
-            visualizations instantly.
-          </motion.p>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 1 }}
+          className="mt-6 text-gray-300 text-lg sm:text-xl leading-relaxed"
+        >
+          Upload your Excel files and watch them transform into
+          <br className="hidden sm:block" />
+          <span className="text-[#9C4EFF] font-medium">
+            interactive 2D & 3D charts
+          </span>{" "}
+          — instantly and effortlessly.
+        </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.6, duration: 0.7 }}
+        {/* Button Section */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 0.7 }}
+          className="mt-10 flex justify-center"
+        >
+          <Button
+            size="lg"
+            className="bg-gradient-to-r from-[#9C4EFF] to-[#6A1BFF] hover:from-[#A35CFF] hover:to-[#814DFF]
+              text-white font-semibold px-8 py-4 rounded-2xl shadow-lg shadow-[#9C4EFF]/30
+              transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl"
           >
-            <Button
-              size="lg"
-              className="bg-[#9C4EFF] hover:bg-[#883ee2] px-6 py-3 sm:px-8 sm:py-4 
-             transform transition-transform duration-300 ease-in-out 
-             hover:scale-105 hover:shadow-xl"
-            >
-              <Upload className="w-5 h-5 mr-3" />
-              <Link to="/Login">Get Started Free</Link>
-            </Button>
-          </motion.div>
-        </div>
+            <Upload className="w-5 h-5 mr-3" />
+            <Link to="/Login">Get Started Free</Link>
+          </Button>
+        </motion.div>
+
+        {/* Floating Mini-Chart Animation */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: [0, -15, 0] }}
+          transition={{
+            delay: 1.2,
+            duration: 3,
+            repeat: Infinity,
+            repeatType: "mirror",
+          }}
+          className="absolute bottom-20 right-10 hidden lg:block"
+        >
+          {/* <video
+            src={bgVideo}
+            autoPlay
+            muted
+            loop
+            className="w-[400px] h-[300px] object-cover rounded-2xl border border-white/20 shadow-2xl"
+          /> */}
+        </motion.div>
       </div>
     </section>
   );

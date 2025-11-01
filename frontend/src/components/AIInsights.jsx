@@ -1,6 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { IconBrain, IconChevronDown, IconChevronUp, IconSparkles } from '@tabler/icons-react';
-import axios from '../api/config';
+import React, { useState, useEffect } from "react";
+import {
+  IconBrain,
+  IconChevronDown,
+  IconChevronUp,
+  IconSparkles,
+} from "@tabler/icons-react";
+import axios from "../api/config";
 
 const AIInsights = ({ fileId, fileName, xAxis, yAxis, zAxis, chartType }) => {
   const [insights, setInsights] = useState(null);
@@ -10,143 +15,163 @@ const AIInsights = ({ fileId, fileName, xAxis, yAxis, zAxis, chartType }) => {
 
   const fetchInsights = async () => {
     if (!fileId) return;
-    
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await axios.post(`/ai/insights/${fileId}`, {
-        xAxis,
-        yAxis,
-        zAxis,
-        chartType,
-      }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+      const response = await axios.post(
+        `/ai/insights/${fileId}`,
+        { xAxis, yAxis, zAxis, chartType },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-      });
-      
+      );
       setInsights(response.data.insights);
-    } catch (error) {
-      console.error('Error fetching AI insights:', error);
-      setError('Failed to generate insights');
+    } catch (err) {
+      console.error("Error fetching AI insights:", err);
+      setError("⚠️ Failed to generate insights. Try again!");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (fileId) {
-      fetchInsights();
-    }
+    if (fileId) fetchInsights();
   }, [fileId, xAxis, yAxis, zAxis, chartType]);
 
   if (!fileId) return null;
 
   return (
-    <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-lg border border-purple-600/30 overflow-hidden">
-      <div 
-        className="p-4 cursor-pointer flex items-center justify-between hover:bg-purple-800/20 transition"
+    <div className="relative overflow-hidden rounded-2xl border border-purple-700/40 bg-gradient-to-br from-purple-900/40 to-blue-900/40 shadow-[0_0_30px_-5px_rgba(168,85,247,0.4)] backdrop-blur-xl">
+      {/* Header */}
+      <div
         onClick={() => setExpanded(!expanded)}
+        className="flex cursor-pointer items-center justify-between px-5 py-4 transition-all hover:bg-purple-900/20"
       >
         <div className="flex items-center gap-3">
-          <IconBrain className="text-purple-400" size={24} />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-600/30 text-purple-300">
+            <IconBrain size={22} />
+          </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">🤖 AI Insights</h3>
-            <p className="text-sm text-purple-200">Smart analysis of your data</p>
+            <h3 className="text-lg font-semibold text-white">AI Insights</h3>
+            <p className="text-sm text-purple-200/80">
+              Smart analysis of your uploaded data
+            </p>
           </div>
         </div>
-        
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-3">
           {loading && (
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-400"></div>
+            <div className="h-5 w-5 animate-spin rounded-full border-2 border-purple-400 border-t-transparent"></div>
           )}
-          {expanded ? <IconChevronUp size={20} /> : <IconChevronDown size={20} />}
+          {expanded ? (
+            <IconChevronUp size={20} className="text-purple-300" />
+          ) : (
+            <IconChevronDown size={20} className="text-purple-300" />
+          )}
         </div>
       </div>
 
+      {/* Expanded Section */}
       {expanded && (
-        <div className="px-4 pb-4 border-t border-purple-600/30">
+        <div className="border-t border-purple-700/30 px-5 py-5 transition-all duration-300">
           {loading ? (
-            <div className="text-center py-6">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400 mx-auto mb-2"></div>
-              <p className="text-purple-200">Analyzing your data...</p>
+            <div className="flex flex-col items-center justify-center py-8">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-400 border-t-transparent"></div>
+              <p className="mt-2 text-sm text-purple-200">
+                Generating smart insights...
+              </p>
             </div>
           ) : error ? (
-            <div className="text-center py-4">
+            <div className="text-center">
               <p className="text-red-400">{error}</p>
-              <button 
+              <button
                 onClick={fetchInsights}
-                className="mt-2 text-purple-400 hover:text-purple-300 text-sm"
+                className="mt-3 rounded-lg bg-purple-600/40 px-3 py-1.5 text-sm text-purple-100 transition hover:bg-purple-600/60"
               >
-                Try again
+                Try Again
               </button>
             </div>
           ) : insights ? (
-            <div className="space-y-4 mt-4">
+            <div className="space-y-6">
               {/* Summary */}
-              <div className="bg-purple-800/30 rounded-lg p-3">
-                <h4 className="font-medium text-purple-300 mb-2 flex items-center gap-2">
-                  <IconSparkles size={16} />
+              <div className="rounded-xl bg-purple-800/20 p-4">
+                <h4 className="mb-2 flex items-center gap-2 font-semibold text-purple-300">
+                  <IconSparkles size={18} />
                   Summary
                 </h4>
-                <p className="text-sm text-white">{insights.summary}</p>
+                <p className="text-sm text-white/90">{insights.summary}</p>
               </div>
 
               {/* Key Insights */}
-              {insights.insights && insights.insights.length > 0 && (
+              {insights.insights?.length > 0 && (
                 <div>
-                  <h4 className="font-medium text-purple-300 mb-2">📊 Key Insights</h4>
-                  <ul className="space-y-1">
-                    {insights.insights.map((insight, index) => (
-                      <li key={index} className="text-sm text-purple-100 bg-purple-800/20 rounded px-3 py-2">
-                        {insight}
-                      </li>
+                  <h4 className="mb-2 font-semibold text-purple-300">
+                    📊 Key Insights
+                  </h4>
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {insights.insights.map((i, index) => (
+                      <div
+                        key={index}
+                        className="rounded-lg bg-purple-800/10 p-3 text-sm text-purple-100 shadow-sm hover:bg-purple-800/20"
+                      >
+                        {i}
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
 
               {/* Recommendations */}
-              {insights.recommendations && insights.recommendations.length > 0 && (
+              {insights.recommendations?.length > 0 && (
                 <div>
-                  <h4 className="font-medium text-purple-300 mb-2">💡 Recommendations</h4>
-                  <ul className="space-y-1">
-                    {insights.recommendations.map((rec, index) => (
-                      <li key={index} className="text-sm text-blue-100 bg-blue-800/20 rounded px-3 py-2">
-                        {rec}
-                      </li>
+                  <h4 className="mb-2 font-semibold text-blue-300">
+                    💡 Recommendations
+                  </h4>
+                  <div className="grid gap-2 md:grid-cols-2">
+                    {insights.recommendations.map((r, index) => (
+                      <div
+                        key={index}
+                        className="rounded-lg bg-blue-800/10 p-3 text-sm text-blue-100 shadow-sm hover:bg-blue-800/20"
+                      >
+                        {r}
+                      </div>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               )}
 
-              {/* Stats */}
+              {/* Stats Section */}
               {insights.stats && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                  <div className="bg-neutral-800/50 rounded-lg p-3 text-center">
-                    <div className="text-lg font-bold text-white">{insights.stats.totalRows}</div>
-                    <div className="text-xs text-neutral-400">Rows</div>
-                  </div>
-                  <div className="bg-neutral-800/50 rounded-lg p-3 text-center">
-                    <div className="text-lg font-bold text-white">{insights.stats.totalColumns}</div>
-                    <div className="text-xs text-neutral-400">Columns</div>
-                  </div>
-                  <div className="bg-neutral-800/50 rounded-lg p-3 text-center">
-                    <div className="text-lg font-bold text-white">{insights.stats.numericColumns}</div>
-                    <div className="text-xs text-neutral-400">Numeric</div>
-                  </div>
-                  <div className="bg-neutral-800/50 rounded-lg p-3 text-center">
-                    <div className="text-lg font-bold text-white">{insights.stats.dateColumns}</div>
-                    <div className="text-xs text-neutral-400">Dates</div>
+                <div>
+                  <h4 className="mb-3 font-semibold text-purple-300">📈 Stats Overview</h4>
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {[
+                      { label: "Rows", value: insights.stats.totalRows },
+                      { label: "Columns", value: insights.stats.totalColumns },
+                      { label: "Numeric", value: insights.stats.numericColumns },
+                      { label: "Dates", value: insights.stats.dateColumns },
+                    ].map((stat, i) => (
+                      <div
+                        key={i}
+                        className="rounded-lg bg-neutral-900/60 p-3 text-center shadow-md hover:bg-neutral-800/60 transition"
+                      >
+                        <div className="text-lg font-bold text-white">
+                          {stat.value}
+                        </div>
+                        <div className="text-xs text-neutral-400">
+                          {stat.label}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
             </div>
           ) : (
-            <div className="text-center py-4">
-              <p className="text-purple-200">No insights available</p>
-            </div>
+            <p className="text-center text-purple-200">No insights found.</p>
           )}
         </div>
       )}

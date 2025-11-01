@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 const Testimonials = () => {
   const testimonials = [
     {
-      name: "Shruti Vishwakarma",
+      name: "Aniket",
       role: "Frontend Developer",
       content:
         "Xlense Analytics has revolutionized how we present data to stakeholders. The 3D charts are absolutely stunning!",
       rating: 5,
-      avatar: "SV",
-      color: "#7C3AED",
+      avatar: "A",
+      color: "#A855F7",
     },
     {
       name: "Ankush Kumar",
@@ -24,7 +24,7 @@ const Testimonials = () => {
     },
     {
       name: "Aaryan Kamdar",
-      role: "Backend Developer and Database Manager",
+      role: "Database Manager",
       content:
         "The ease of use is incredible. My team loves how quickly we can turn spreadsheets into compelling presentations.",
       rating: 5,
@@ -32,95 +32,106 @@ const Testimonials = () => {
       color: "#06B6D4",
     },
     {
-      name: "Aniket",
+      name: "Shruti Vishwakarma",
       role: "Frontend Developer",
       content:
         "This platform is a game-changer! The insights I can pull from simple Excel sheets are beyond impressive.",
       rating: 5,
-      avatar: "A",
-      color: "#3B82F6",
+      avatar: "SV",
+      color: "#8B5CF6",
     },
   ];
 
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="testimonials"
+      className="relative py-24 overflow-hidden bg-[#030014]"
+    >
+      {/* Background gradient glows */}
+      <div className="absolute inset-0">
+        <div className="absolute -top-20 -left-20 w-96 h-96 bg-purple-600/30 blur-[150px] rounded-full" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-blue-600/20 blur-[180px] rounded-full" />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-6">
         {/* Animated Heading */}
         <motion.div
-          className="text-center mb-16"
+          className="text-center mb-20"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7 }}
           viewport={{ once: true }}
         >
-          <motion.h2
-            className="text-4xl font-bold mb-4 text-black"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            Big Impact
-          </motion.h2>
-
-          <motion.p
-            className="text-xl text-gray-600"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            viewport={{ once: true }}
-          >
-            See what our users are saying about Xlense Analytics
-          </motion.p>
+          <h2 className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 text-transparent bg-clip-text mb-4">
+            What People Say
+          </h2>
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            Here’s what our users think about their journey with{" "}
+            <span className="text-purple-400 font-semibold">
+              Xlense Analytics
+            </span>
+          </p>
         </motion.div>
 
-        {/* Grid Cards – No Horizontal Scroll */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {testimonials.map((testimonial, index) => (
+        {/* Testimonials Grid */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            visible: { transition: { staggerChildren: 0.15 } },
+            hidden: {},
+          }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {testimonials.map((t, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.5 }}
             >
-              <Card className="border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 bg-[#F5F5F7] h-full">
+              <Card className="border border-white/10 bg-white/5 backdrop-blur-lg rounded-2xl hover:shadow-[0_0_25px_rgba(124,58,237,0.3)] transition-all duration-500 hover:scale-[1.04] h-full">
                 <CardContent className="p-8 flex flex-col justify-between h-full">
                   <div>
+                    {/* Star Rating */}
                     <div className="flex items-center mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
+                      {[...Array(t.rating)].map((_, i) => (
                         <Star
                           key={i}
-                          className="w-5 h-5 fill-current"
-                          style={{ color: testimonial.color }}
+                          className="w-5 h-5 mr-1"
+                          style={{ color: t.color }}
+                          fill={t.color}
                         />
                       ))}
                     </div>
-                    <p className="mb-6 leading-relaxed text-gray-600">
-                      "{testimonial.content}"
+
+                    {/* Testimonial Content */}
+                    <p className="text-gray-300 leading-relaxed italic mb-6">
+                      “{t.content}”
                     </p>
                   </div>
+
+                  {/* User Info */}
                   <div className="flex items-center">
                     <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold mr-4"
-                      style={{ backgroundColor: testimonial.color }}
+                      className="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-white mr-4"
+                      style={{ backgroundColor: t.color }}
                     >
-                      {testimonial.avatar}
+                      {t.avatar}
                     </div>
                     <div>
-                      <div className="font-semibold text-black">
-                        {testimonial.name}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        {testimonial.role}
-                      </div>
+                      <div className="font-semibold text-white">{t.name}</div>
+                      <div className="text-sm text-gray-400">{t.role}</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
