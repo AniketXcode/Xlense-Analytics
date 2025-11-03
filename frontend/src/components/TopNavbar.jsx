@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
+
 const TopNavbar = ({ username = "Rajat" }) => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -87,6 +88,7 @@ const TopNavbar = ({ username = "Rajat" }) => {
             onClick={() => navigate("/ai-chat")}
             className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-blue-700/20 hover:bg-blue-700/40 border border-blue-500/30 rounded-lg text-sm text-blue-300 transition-all duration-300"
           >
+
             <IconMessageChatbot size={18} /> AI Help
           </button>
 

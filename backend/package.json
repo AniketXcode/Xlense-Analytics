@@ -9,6 +9,8 @@
         "make-admin": "node scripts/makeAdmin.js"
     },
     "dependencies": {
+        "@google/generative-ai": "^0.24.1",
+        "axios": "^1.13.1",
         "bcryptjs": "^2.4.3",
         "cors": "^2.8.5",
         "dotenv": "^16.6.1",
@@ -18,6 +20,7 @@
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^7.8.7",
         "multer": "^2.0.2",
+        "nodemailer": "^7.0.10",
         "xlsx": "^0.18.5"
     },
     "devDependencies": {
