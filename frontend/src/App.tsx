@@ -8,7 +8,6 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import AdminPanel from "./pages/AdminPanel";
 import History from "./pages/History";
@@ -18,6 +17,8 @@ import UploadSuccess from "./pages/UploadSuccess";
 import Upload from "./pages/Upload";
 import AxisSelection from "./pages/AxisSelection";
 import Charts from "./pages/Charts";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,8 @@ const App = () => (
           <Route path="/charts" element={<Charts />} />
           <Route path="/guide" element={<Guide />} />
           <Route path="/ai-chat" element={<AIChat />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
 
           {/* Keep the 404 route LAST */}
           <Route path="*" element={<NotFound />} />

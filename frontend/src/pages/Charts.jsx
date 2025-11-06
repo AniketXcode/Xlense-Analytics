@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import HighchartsReact from "highcharts-react-official";
 import Highcharts from "highcharts";
 import "highcharts/highcharts-3d";
+import Exporting from "highcharts/modules/exporting"; // ✅ Add this
 import { motion, AnimatePresence } from "framer-motion";
 import {
   IconArrowLeft,
@@ -13,10 +14,18 @@ import {
   IconCheck,
   IconBrain,
   IconX,
+  IconDownload,
 } from "@tabler/icons-react";
 import axios from "../api/config";
 
-// ---------- Styles for nebula background (Tailwind + internal CSS) ----------
+
+
+// ✅ Activate Highcharts exporting module
+if (typeof exportingInit === "function") {
+  exportingInit(Highcharts);
+}
+
+// ---------- Styles for nebula background ----------
 const NebulaStyles = () => (
   <style>{`
     @keyframes nebulaMove {
@@ -39,12 +48,10 @@ const NebulaStyles = () => (
       backdrop-filter: blur(8px) saturate(120%);
       -webkit-backdrop-filter: blur(8px) saturate(120%);
     }
-    /* hide highcharts credits if any leftover */
     .highcharts-credits { display: none !important; }
   `}</style>
 );
 
-// ---------- Main Component ----------
 const Charts = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,12 +62,14 @@ const Charts = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // Modal / AI states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState("");
   const [aiInsights, setAiInsights] = useState(null);
+  const chartRef = React.useRef(null);
 
+
+  // ✅ Fetch chart data
   useEffect(() => {
     const fetchChartData = async () => {
       try {
@@ -84,6 +93,7 @@ const Charts = () => {
     fetchChartData();
   }, [fileId, xAxis, yAxis, zAxis, chartType]);
 
+  // ✅ Save chart handler
   const handleSaveChart = async () => {
     try {
       setSaving(true);
@@ -106,6 +116,19 @@ const Charts = () => {
     }
   };
 
+  // ✅ Download chart as PNG (Highcharts built-in)
+  const handleDownloadChart = () => {
+    const chart = chartRef.current?.chart;
+    if (!chart) {
+      alert("Chart not found!");
+      return;
+    }
+    chart.exportChart({ type: "image/png", filename: fileName || "chart" });
+    chart.exportChart({ type: "application/pdf" });
+
+
+  };
+  // ✅ AI insights
   const fetchAIInsights = async () => {
     if (!fileId) {
       setAiError("No file available to analyze.");
@@ -116,14 +139,11 @@ const Charts = () => {
     setAiInsights(null);
 
     try {
-      // call your AI insights endpoint
       const res = await axios.post(
         `/ai/insights/${fileId}`,
         { xAxis, yAxis, zAxis, chartType },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
-
-      // Expecting { insights: { summary, insights:[], recommendations:[], stats: {} } }
       setAiInsights(res.data.insights || res.data);
     } catch (err) {
       console.error("AI insights error:", err);
@@ -133,39 +153,37 @@ const Charts = () => {
     }
   };
 
+  // ✅ Chart options
   const getChartOptions = () => {
     if (!chartData) return {};
     const is3DChart = chartType?.includes("3d");
     const baseChartType = chartType?.replace("3d-", "");
-    const baseOptions = {
+    return {
       chart: {
         backgroundColor: "transparent",
         type: baseChartType === "donut" ? "pie" : baseChartType,
-        ...(is3DChart && { options3d: { enabled: true, alpha: 45, beta: 0, depth: baseChartType === "column" ? 70 : 35 } }),
+        ...(is3DChart && { options3d: { enabled: true, alpha: 45, beta: 0, depth: 50 } }),
       },
-      title: { text: `${(chartType || "").toUpperCase()} - ${fileName}`, style: { color: "#ffffff" } },
+      title: { text: `${(chartType || "").toUpperCase()} - ${fileName}`, style: { color: "#fff" } },
       xAxis: { categories: chartData.categories, labels: { style: { color: "#ccc" } }, title: { text: xAxis, style: { color: "#ccc" } } },
       yAxis: { title: { text: yAxis, style: { color: "#ccc" } }, labels: { style: { color: "#ccc" } } },
       plotOptions: {
-        ...(baseChartType === "pie" && {
-          pie: { allowPointSelect: true, cursor: "pointer", ...(is3DChart && { depth: 35 }), ...(chartType === "3d-donut" && { innerSize: 100 }), dataLabels: { enabled: true, style: { color: "#fff" } } },
-        }),
-        ...(baseChartType === "column" && is3DChart && { column: { depth: 25, colorByPoint: true } }),
+        pie: { allowPointSelect: true, cursor: "pointer", depth: 45, dataLabels: { enabled: true, style: { color: "#fff" } } },
+        column: { depth: 25, colorByPoint: true },
       },
       series: [{ name: `${yAxis} vs ${xAxis}`, data: chartData.seriesData, color: "#8b5cf6" }],
       credits: { enabled: false },
-      legend: { itemStyle: { color: "#cccccc" } },
+      legend: { itemStyle: { color: "#ccc" } },
+      exporting: { enabled: false }, // disable default icon
     };
-    return baseOptions;
   };
 
-  // loading states
   if (loading) {
     return (
-      <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[#050014] via-[#0a0024] to-[#050011] text-white p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-[#050014] via-[#0a0024] to-[#050011] flex items-center justify-center text-white">
         <NebulaStyles />
-        <div className="text-center z-10">
-          <div className="animate-spin rounded-full h-14 w-14 border-b-4 border-purple-400 mx-auto mb-4"></div>
+        <div className="flex flex-col items-center">
+          <div className="animate-spin h-14 w-14 border-b-4 border-purple-400 rounded-full mb-4"></div>
           <p className="text-neutral-300">Preparing your chart...</p>
         </div>
       </div>
@@ -174,9 +192,9 @@ const Charts = () => {
 
   if (!fileName || !xAxis || !yAxis || !chartType) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#050014] to-[#050011] text-white p-6 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#050014] to-[#050011] text-white">
         <NebulaStyles />
-        <div className="z-10 text-center">
+        <div className="text-center">
           <h2 className="text-2xl font-bold text-red-400 mb-4">Missing chart configuration</h2>
           <button onClick={() => navigate("/axis-selection")} className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg">
             Go back to configure
@@ -187,241 +205,126 @@ const Charts = () => {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-b from-[#050014] via-[#0a0024] to-[#050011] text-white p-6">
+    <div className="min-h-screen relative bg-gradient-to-b from-[#050014] via-[#0a0024] to-[#050011] text-white p-6 overflow-hidden">
       <NebulaStyles />
       <div className="nebula" />
-
       <div className="max-w-7xl mx-auto relative z-10">
+
         {/* Header */}
         <div className="flex items-start justify-between gap-6 mb-6">
           <div className="flex items-center gap-4">
-            <button onClick={() => navigate("/axis-selection", { state: { fileName, fileId } })} className="text-purple-300 hover:text-purple-200 transition flex items-center gap-2">
-              <IconArrowLeft size={18} />
-              Back
+            <button
+              onClick={() => navigate("/axis-selection", { state: { fileName, fileId } })}
+              className="text-purple-300 hover:text-purple-200 flex items-center gap-2"
+            >
+              <IconArrowLeft size={18} /> Back
             </button>
             <div>
               <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 to-cyan-300">
                 Generated Chart
               </h1>
-              <p className="text-neutral-400 mt-1 text-sm">File: <span className="text-white font-medium">{fileName}</span></p>
+              <p className="text-neutral-400 mt-1 text-sm">
+                File: <span className="text-white font-medium">{fileName}</span>
+              </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
+            {/* ✅ Save Button */}
             <button
               onClick={handleSaveChart}
               disabled={saving || saved}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${saved ? "bg-green-600 text-white" : saving ? "bg-neutral-700 text-neutral-300" : "bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"
-                }`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${saved ? "bg-green-600 text-white" : saving ? "bg-neutral-700 text-neutral-300" : "bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"}`}
             >
-              {saved ? (
-                <>
-                  <IconCheck size={16} />
-                  Saved
-                </>
-              ) : saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <IconDeviceFloppy size={16} />
-                  Save
-                </>
-              )}
+              {saved ? <><IconCheck size={16} /> Saved</> :
+                saving ? <><div className="animate-spin h-4 w-4 border-b-2 border-white rounded-full" /> Saving...</> :
+                  <><IconDeviceFloppy size={16} /> Save</>}
             </button>
 
-            <button onClick={() => setIsModalOpen(true)} className="bg-purple-700/30 hover:bg-purple-700/50 px-4 py-2 rounded-lg border border-purple-600/40 text-purple-200 transition shadow-md hover:shadow-[0_8px_30px_rgba(139,92,246,0.12)]">
+            {/* ✅ Download Button */}
+            <button
+              onClick={handleDownloadChart}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-700/30 hover:bg-purple-700/50 border border-purple-600/40 text-purple-200 transition shadow-md hover:shadow-[0_8px_30px_rgba(139,92,246,0.12)]"
+            >
+              <IconDownload size={16} /> Download
+            </button>
+
+            {/* AI Button */}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-purple-700/30 hover:bg-purple-700/50 px-4 py-2 rounded-lg border border-purple-600/40 text-purple-200 transition shadow-md hover:shadow-[0_8px_30px_rgba(139,92,246,0.12)]"
+            >
               <div className="flex items-center gap-2">
-                <IconBrain size={18} />
-                AI Insights
+                <IconBrain size={18} /> AI Insights
               </div>
             </button>
           </div>
         </div>
 
-        {/* Chart + side placeholder */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Chart Panel */}
-          <div className="lg:col-span-8">
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="glass-border rounded-2xl p-5 bg-gradient-to-br from-[#0f0f16]/60 to-[#08040a]/60 border border-purple-700/10">
-              <div className="relative">
-                <div className="absolute -inset-0.5 rounded-2xl pointer-events-none" style={{ boxShadow: "0 0 40px rgba(139,92,246,0.06)" }} />
-                <div className="rounded-xl p-4 bg-gradient-to-b from-[#0b0b10]/50 to-transparent">
-                  {chartData ? (
-                    <HighchartsReact highcharts={Highcharts} options={getChartOptions()} />
-                  ) : (
-                    <p className="text-center text-neutral-400 py-8">No chart data available</p>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Right Info column (small) */}
-          <div className="lg:col-span-4">
-            <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.45, delay: 0.05 }} className="rounded-2xl p-5 glass-border bg-gradient-to-br from-[#0b0512]/60 to-[#07020a]/60 border border-purple-700/10">
-              <h3 className="text-lg font-semibold text-purple-300 mb-3">Quick Info</h3>
-              <ul className="text-sm space-y-2 text-neutral-300">
-                <li><strong>Type:</strong> <span className="text-white ml-2">{chartType}</span></li>
-                <li><strong>X:</strong> <span className="text-white ml-2">{xAxis}</span></li>
-                <li><strong>Y:</strong> <span className="text-white ml-2">{yAxis}</span></li>
-                {zAxis && <li><strong>Z:</strong> <span className="text-white ml-2">{zAxis}</span></li>}
-                <li><strong>File:</strong> <span className="text-white ml-2">{fileName}</span></li>
-              </ul>
-
-              <div className="mt-5">
-                <button onClick={() => setIsModalOpen(true)} className="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 px-4 py-2 rounded-lg font-medium shadow-md">
-                  Open AI Assistant
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-
-      {/* ---------- AI Insights Modal (centered) ---------- */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            {/* Backdrop */}
-            <motion.div
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+        {/* Chart area */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          className="glass-border rounded-2xl p-5 bg-gradient-to-br from-[#0f0f16]/60 to-[#08040a]/60 border border-purple-700/10"
+        >
+          {chartData ? (
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={getChartOptions()}
+              ref={chartRef}
             />
 
-            {/* Modal Card */}
-            <motion.div
-              initial={{ y: 30, opacity: 0, scale: 0.98 }}
-              animate={{ y: 0, opacity: 1, scale: 1 }}
-              exit={{ y: 20, opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.35 }}
-              className="relative z-50 max-w-3xl w-full mx-4 glass-border rounded-2xl border border-purple-600/30 p-6 bg-gradient-to-br from-[#0d0420]/80 to-[#0b0216]/60"
-            >
-              {/* Close Button */}
-              <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 p-2 rounded-md hover:bg-white/5">
-                <IconX size={18} />
-              </button>
+          ) : (
+            <p className="text-center text-neutral-400 py-8">No chart data available</p>
+          )}
+        </motion.div>
 
-              {/* Modal Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">AI Insights</h2>
-                  <p className="text-sm text-purple-300/80 mt-1">Ask the assistant to analyze this dataset and suggest actions.</p>
-                </div>
-                <div className="text-sm text-neutral-300">File: <span className="text-white ml-1 font-medium">{fileName}</span></div>
-              </div>
+        {/* AI Insights Modal */}
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div className="fixed inset-0 z-50 flex items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div className="absolute inset-0 bg-black/70 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+              <motion.div
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 20, opacity: 0 }}
+                transition={{ duration: 0.35 }}
+                className="relative z-50 max-w-3xl w-full mx-4 glass-border rounded-2xl border border-purple-600/30 p-6 bg-gradient-to-br from-[#0d0420]/80 to-[#0b0216]/60"
+              >
+                <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 p-2 rounded-md hover:bg-white/5">
+                  <IconX size={18} />
+                </button>
+                <h2 className="text-2xl font-bold text-white mb-3">AI Insights</h2>
+                <p className="text-sm text-purple-300/80 mb-4">Analyze this dataset and suggest actions.</p>
 
-              {/* Generate Button */}
-              <div className="mb-4">
                 <button
                   onClick={fetchAIInsights}
                   disabled={aiLoading}
-                  className={`px-4 py-2 rounded-lg font-medium transition ${aiLoading ? "bg-neutral-700 text-neutral-300" : "bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"
-                    }`}
+                  className={`px-4 py-2 rounded-lg font-medium transition ${aiLoading ? "bg-neutral-700 text-neutral-300" : "bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-700 hover:to-cyan-600 text-white"}`}
                 >
                   {aiLoading ? "Generating insights..." : "Generate AI Insights"}
                 </button>
-              </div>
 
-              {/* Body: show loading / error / insights */}
-              <div className="max-h-[60vh] overflow-auto pr-2">
-                {aiLoading && (
-                  <div className="flex flex-col items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-purple-400 mb-3"></div>
-                    <p className="text-purple-200">Analyzing your data — this may take a few seconds.</p>
-                  </div>
-                )}
-
-                {aiError && (
-                  <div className="bg-red-600/10 text-red-300 p-4 rounded-lg">
-                    <strong>Error:</strong>
-                    <div className="mt-1">{aiError}</div>
-                  </div>
-                )}
-
-                {aiInsights && (
-                  <div className="space-y-4">
-                    {/* Summary */}
-                    {aiInsights.summary && (
-                      <div className="bg-[#12041a] border border-purple-700/30 rounded-lg p-4">
-                        <h4 className="text-sm text-purple-300 font-semibold mb-2">Summary</h4>
-                        <p className="text-sm text-white/90">{aiInsights.summary}</p>
-                      </div>
-                    )}
-
-                    {/* Key Insights */}
-                    {Array.isArray(aiInsights.insights) && aiInsights.insights.length > 0 && (
-                      <div>
-                        <h4 className="text-sm text-purple-300 font-semibold mb-2">Key Insights</h4>
-                        <ul className="space-y-2">
-                          {aiInsights.insights.map((it, idx) => (
-                            <li key={idx} className="bg-[#0b0520]/50 rounded-lg p-3 text-sm text-purple-100">
-                              {it}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Recommendations */}
-                    {Array.isArray(aiInsights.recommendations) && aiInsights.recommendations.length > 0 && (
-                      <div>
-                        <h4 className="text-sm text-cyan-200 font-semibold mb-2">Recommendations</h4>
-                        <ul className="grid gap-2">
-                          {aiInsights.recommendations.map((rec, idx) => (
-                            <li key={idx} className="bg-[#021017]/50 rounded-lg p-3 text-sm text-cyan-100">
-                              {rec}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Stats */}
-                    {aiInsights.stats && (
-                      <div>
-                        <h4 className="text-sm text-purple-300 font-semibold mb-2">Stats</h4>
-                        <div className="grid grid-cols-2 gap-3">
-                          <StatTiny label="Rows" value={aiInsights.stats.totalRows} />
-                          <StatTiny label="Columns" value={aiInsights.stats.totalColumns} />
-                          <StatTiny label="Numeric" value={aiInsights.stats.numericColumns} />
-                          <StatTiny label="Dates" value={aiInsights.stats.dateColumns} />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {!aiLoading && !aiInsights && !aiError && (
-                  <div className="text-center text-neutral-400 py-8">
-                    <p className="mb-2">No insights generated yet.</p>
-                    <p className="text-xs">Click <strong>Generate AI Insights</strong> to analyze the uploaded data.</p>
-                  </div>
-                )}
-              </div>
+                <div className="max-h-[60vh] overflow-auto mt-5">
+                  {aiLoading && <p className="text-purple-200 text-center">Analyzing your data...</p>}
+                  {aiError && <div className="bg-red-600/10 text-red-300 p-4 rounded-lg mt-3">{aiError}</div>}
+                  {aiInsights && (
+                    <div className="mt-4 space-y-3 text-sm">
+                      {aiInsights.summary && <p className="text-white">{aiInsights.summary}</p>}
+                      {aiInsights.insights?.length > 0 && (
+                        <ul className="list-disc list-inside text-purple-200">{aiInsights.insights.map((i, idx) => <li key={idx}>{i}</li>)}</ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 };
 
 export default Charts;
-
-/* ---------- small helper components ---------- */
-const StatTiny = ({ label, value }) => (
-  <div className="rounded-lg bg-neutral-900/40 p-3 text-center">
-    <div className="text-lg font-semibold text-white">{value ?? "-"}</div>
-    <div className="text-xs text-neutral-400">{label}</div>
-  </div>
-);

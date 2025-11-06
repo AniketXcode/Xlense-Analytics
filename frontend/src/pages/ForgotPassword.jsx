@@ -16,14 +16,15 @@ const ForgotPassword = () => {
 
     try {
       // 🧠 Backend Integration Placeholder
-      // const res = await fetch("http://localhost:8000/api/auth/forgot-password", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email }),
-      // });
+      const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-      // const data = await res.json();
-      // if (!res.ok) throw new Error(data.message || "Failed to send reset link");
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send reset link");
 
       // Simulate success (remove this after backend is connected)
       await new Promise((resolve) => setTimeout(resolve, 1500));
