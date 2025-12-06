@@ -9,8 +9,12 @@ connectDB();
 const app = express();
 
 // Middleware
+import cors from "cors";
+
 app.use(cors({
-  origin: "http://localhost:8080",
+  origin: [
+    "https://xlense-analytics-2-d369.onrender.com",   // your frontend
+  ],
   credentials: true,
 }));
 

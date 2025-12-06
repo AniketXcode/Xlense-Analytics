@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://xlense-analytics-2-d369.onrender.com/api';
 
 export const loginUser = async (email, password) => {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -53,5 +53,3 @@ export const getUserProfile = async () => {
 
   return data;
 };
-
-

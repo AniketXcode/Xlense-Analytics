@@ -58,36 +58,18 @@ const Hero = () => {
           transition={{ delay: 0.6, duration: 0.7 }}
           className="mt-10 flex justify-center"
         >
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-[#9C4EFF] to-[#6A1BFF] hover:from-[#A35CFF] hover:to-[#814DFF]
-              text-white font-semibold px-8 py-4 rounded-2xl shadow-lg shadow-[#9C4EFF]/30
-              transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl"
-          >
-            <Upload className="w-5 h-5 mr-3" />
-            <Link to="/Login">Get Started Free</Link>
-          </Button>
-        </motion.div>
-
-        {/* Floating Mini-Chart Animation */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: [0, -15, 0] }}
-          transition={{
-            delay: 1.2,
-            duration: 3,
-            repeat: Infinity,
-            repeatType: "mirror",
-          }}
-          className="absolute bottom-20 right-10 hidden lg:block"
-        >
-          {/* <video
-            src={bgVideo}
-            autoPlay
-            muted
-            loop
-            className="w-[400px] h-[300px] object-cover rounded-2xl border border-white/20 shadow-2xl"
-          /> */}
+          {/* Wrap Link around Button for full clickable area */}
+          <Link to="/login">
+            <Button
+              size="lg"
+              className="bg-gradient-to-r from-[#9C4EFF] to-[#6A1BFF] hover:from-[#A35CFF] hover:to-[#814DFF]
+                text-white font-semibold px-8 py-4 rounded-2xl shadow-lg shadow-[#9C4EFF]/30
+                transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl flex items-center"
+            >
+              <Upload className="w-5 h-5 mr-3" />
+              Get Started
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>
