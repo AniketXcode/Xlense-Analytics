@@ -13,7 +13,7 @@ import cors from "cors";
 
 app.use(cors({
   origin: [
-    "https://xlense-analytics-2-d369.onrender.com",   // your frontend
+    "https://xlens-alpha.vercel.app",
   ],
   credentials: true,
 }));
