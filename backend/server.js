@@ -8,15 +8,16 @@ connectDB();
 
 const app = express();
 
-// Middleware
-import cors from "cors";
-
+// CORS FIX
 app.use(cors({
   origin: [
     "https://xlens-alpha.vercel.app",
+    "http://localhost:5173"
   ],
   credentials: true,
 }));
+
+app.options("*", cors());
 
 app.use(express.json());
 
