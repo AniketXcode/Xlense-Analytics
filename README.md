@@ -2,6 +2,8 @@
 
 A modern, AI-powered Excel analytics platform that transforms your data into interactive charts and insights. Built with React, Node.js, and MongoDB.
 
+## Demo live https://xlens-alpha.vercel.app/
+
 ## ✨ Features
 
 ### 🎯 Core Analytics
