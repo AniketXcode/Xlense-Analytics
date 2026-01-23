@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 
+
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -30,7 +31,7 @@ const Header = () => {
           {/* Logo + Site Name */}
           <div className="flex items-center space-x-3">
             <img
-              src="/src/assets/logo.png"
+              src="favicon.ico"
               alt="Xlense Analytics Logo"
               className="w-8 h-8 object-contain"
             />
