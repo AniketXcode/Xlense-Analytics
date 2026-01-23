@@ -19,6 +19,7 @@ import AxisSelection from "./pages/AxisSelection";
 import Charts from "./pages/Charts";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,8 @@ const App = () => (
           <Route path="/ai-chat" element={<AIChat />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
 
           {/* Keep the 404 route LAST */}
           <Route path="*" element={<NotFound />} />
